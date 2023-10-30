@@ -13,23 +13,28 @@ const getState = ({ getStore, getActions, setStore }) => {
 					background: "white",
 					initial: "white"
 				}
-			]
+			],
+			email: ""
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
+			updateEmail: (newEmail) => {
+				setStore({email:newEmail})
+			},
+
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");
 			},
 
 			getMessage: async () => {
-				try{
+				try {
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves
 					return data;
-				}catch(error){
+				} catch (error) {
 					console.log("Error loading message from backend", error)
 				}
 			},
@@ -46,7 +51,25 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
+			},
+
+			registro: async (email, password) => {
+				try {
+					const newUser = {
+						email: email,
+						password: password
+					}
+					const registro = await fetch(process.env.BACKEND_URL + "/register", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(newUser)
+					})
+					if (!registro.ok) { console.log("error al crear usuario") }
+					const data = await registro.json()
+				}
+				catch (error) { console.log(error) }
 			}
+
 		}
 	};
 };
